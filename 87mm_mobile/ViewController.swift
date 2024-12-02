@@ -6,8 +6,16 @@
 //
 
 import UIKit
+// TODO: - UICollectionDiffableDataSource는 유니크한 값만 사용 가능.
 
 class ViewController: UIViewController {
+    //, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
+    var data = ProductData.list
+    var dataSource: UICollectionViewDiffableDataSource<Section, ProductData>!
+    
+    enum Section {
+        case main
+    }
     
     lazy var logoCustomButton: CustomButtonView = {
         let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 44, height: 28))
@@ -50,6 +58,18 @@ class ViewController: UIViewController {
         button.imageName = "magnifyingglass"
         return button
     }()
+    
+    lazy var collectionView: UICollectionView = {
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(ProductCell.self, forCellWithReuseIdentifier: "ProductCell")
+        
+//        collectionView.dataSource = self
+//        collectionView.delegate = self
+        return collectionView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,22 +102,57 @@ class ViewController: UIViewController {
             $0.customView?.widthAnchor.constraint(equalToConstant: 30).isActive = true
         }
         
-        // TODO: - ScrollView 만들고 내부에 CollectionView 삽입
-        let test = UIScrollView()
-        test.backgroundColor = .white
-        test.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(test)
+        configureCollectionView()
+        applySectionItems(data)
+        view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            test.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            test.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            test.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            test.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
         
     }
+    
+    private func applySectionItems(_ items: [ProductData], to sections: Section = .main) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, ProductData>()
+        snapshot.appendSections([sections])
+        snapshot.appendItems(items, toSection: sections)
+        dataSource.apply(snapshot)
+    }
 
+    private func configureCollectionView() {
+        dataSource = UICollectionViewDiffableDataSource<Section, ProductData>(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductCell", for: indexPath) as? ProductCell else {
+                return nil
+            }
+            cell.configure(itemIdentifier)
+            return cell
+        })
+        
+        collectionView.collectionViewLayout = layout()
+//        collectionView.delegate = self
+    }
+    
+    private func layout() -> UICollectionViewCompositionalLayout {
+        
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1))
+        
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let gruopSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.45))
+        
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: gruopSize, repeatingSubitem: item, count: 2)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        
+        return layout
+    }
 
 }
 
