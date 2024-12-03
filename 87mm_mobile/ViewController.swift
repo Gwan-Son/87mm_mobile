@@ -6,12 +6,13 @@
 //
 
 import UIKit
-// TODO: - UICollectionDiffableDataSource는 유니크한 값만 사용 가능.
+import Combine
 
 class ViewController: UIViewController {
-    //, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
-    var data = ProductData.list
+    
+    var data = ProductData.list // 임시 데이터 셋
     var dataSource: UICollectionViewDiffableDataSource<Section, ProductData>!
+    var isHidden = true
     
     enum Section {
         case main
@@ -28,6 +29,7 @@ class ViewController: UIViewController {
         let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
         button.translatesAutoresizingMaskIntoConstraints = false
         button.imageName = "line.3.horizontal.decrease"
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
     
@@ -65,10 +67,15 @@ class ViewController: UIViewController {
         let collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(ProductCell.self, forCellWithReuseIdentifier: "ProductCell")
-        
-//        collectionView.dataSource = self
-//        collectionView.delegate = self
         return collectionView
+    }()
+    
+    lazy var categoryView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .main
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
     }()
 
     override func viewDidLoad() {
@@ -104,13 +111,22 @@ class ViewController: UIViewController {
         
         configureCollectionView()
         applySectionItems(data)
+        
         view.addSubview(collectionView)
+        view.addSubview(categoryView)
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            categoryView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            categoryView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            categoryView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            categoryView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            
         ])
         
         
@@ -133,7 +149,7 @@ class ViewController: UIViewController {
         })
         
         collectionView.collectionViewLayout = layout()
-//        collectionView.delegate = self
+        collectionView.delegate = self
     }
     
     private func layout() -> UICollectionViewCompositionalLayout {
@@ -154,5 +170,20 @@ class ViewController: UIViewController {
         return layout
     }
 
+    // 임시 버튼 테스트
+    // TODO: - 메뉴, 홈, 검색, 마이페이지, 찜, 장바구니
+    @objc func didTapButton() {
+        print("Button!!")
+        
+        isHidden.toggle()
+        // 애니메이션 추가하고 싶음.
+        categoryView.isHidden = isHidden
+        isHidden ? (menuCustomButton.imageName = "line.3.horizontal.decrease") : (menuCustomButton.imageName = "xmark")
+    }
 }
 
+extension ViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("didSelectItemAt: \(indexPath.item)")
+    }
+}
