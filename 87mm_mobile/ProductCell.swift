@@ -11,12 +11,21 @@ class ProductCell: UICollectionViewCell {
     
     static let identifier = "ProductCell"
     
+    private var pageViewController: UIPageViewController!
+    private var pages: [UIViewController] = []
+    private var pageControl: UIPageControl = {
+        let pageControl = UIPageControl()
+        pageControl.currentPageIndicatorTintColor = .black
+        pageControl.pageIndicatorTintColor = .lightGray
+        return pageControl
+    }()
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        return imageView
+    private var heartButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
+        button.tintColor = .black
+        button.addTarget(self, action: #selector(didTapHeartButton), for: .touchUpInside)
+        return button
     }()
     
     private let productLabel: UILabel = {
@@ -56,7 +65,7 @@ class ProductCell: UICollectionViewCell {
     
     
     func configure(_ data: ProductData) {
-        imageView.image = UIImage(named: data.imagename)
+        setupPageViewController(with: data.imagenames)
         productLabel.text = data.name
         priceLabel.text = data.price
     }
@@ -71,24 +80,39 @@ class ProductCell: UICollectionViewCell {
     }
     
     private func setupViews() {
-        contentView.addSubview(imageView)
+        pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+        
+        pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        contentView.addSubview(pageViewController.view)
+        contentView.addSubview(heartButton)
+        contentView.addSubview(pageControl)
         contentView.addSubview(productLabel)
         contentView.addSubview(priceLabel)
         contentView.addSubview(sizeLabel)
         contentView.addSubview(dividerView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        heartButton.translatesAutoresizingMaskIntoConstraints = false
         productLabel.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
         sizeLabel.translatesAutoresizingMaskIntoConstraints = false
         dividerView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor),
+            pageViewController.view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            pageViewController.view.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            pageViewController.view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 0),
+            pageViewController.view.heightAnchor.constraint(equalTo: pageViewController.view.widthAnchor, multiplier: 1.25),
             
-            productLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
+            heartButton.topAnchor.constraint(equalTo: pageViewController.view.topAnchor, constant: 8),
+            heartButton.trailingAnchor.constraint(equalTo: pageViewController.view.trailingAnchor, constant: -8),
+            heartButton.heightAnchor.constraint(equalToConstant: 15),
+            
+            pageControl.topAnchor.constraint(equalTo: pageViewController.view.bottomAnchor, constant: -32),
+            pageControl.centerXAnchor.constraint(equalTo: pageViewController.view.centerXAnchor),
+            pageControl.heightAnchor.constraint(equalToConstant: 18),
+            
+            productLabel.topAnchor.constraint(equalTo: pageViewController.view.bottomAnchor, constant: 8),
             productLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             productLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             productLabel.heightAnchor.constraint(equalToConstant: 30),
@@ -103,11 +127,53 @@ class ProductCell: UICollectionViewCell {
             sizeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             sizeLabel.heightAnchor.constraint(equalToConstant: 20),
             
-            dividerView.heightAnchor.constraint(equalToConstant: 1),
+            dividerView.heightAnchor.constraint(equalToConstant: 2),
             dividerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             dividerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            dividerView.topAnchor.constraint(equalTo: sizeLabel.bottomAnchor, constant: 10)
+            dividerView.topAnchor.constraint(equalTo: sizeLabel.bottomAnchor, constant: 0)
             
         ])
+    }
+    
+    private func setupPageViewController(with imageNames: [String]) {
+        pages = imageNames.map { imagename in
+            let imageViewController = UIViewController()
+            let imageView = UIImageView(image: UIImage(named: imagename))
+            imageView.contentMode = .scaleAspectFit
+            imageView.clipsToBounds = true
+            imageViewController.view = imageView
+            return imageViewController
+        }
+        
+        pageViewController.setViewControllers([pages[0]], direction: .forward, animated: false, completion: nil)
+        pageViewController.dataSource = self
+        pageViewController.delegate = self
+        
+        pageControl.numberOfPages = pages.count
+        pageControl.currentPage = 0
+    }
+    
+    // TODO: - Toggle HeartButton
+    @objc func didTapHeartButton() {
+        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        heartButton.tintColor = .main
+    }
+}
+
+extension ProductCell: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard let index = pages.firstIndex(of: viewController), index > 0 else { return nil }
+        return pages[index - 1]
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        guard let index = pages.firstIndex(of: viewController), index < pages.count - 1 else { return nil }
+        return pages[index + 1]
+    }
+    
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
+        if let currentViewController = pageViewController.viewControllers?.first, let currentIndex = pages.firstIndex(of: currentViewController) {
+            pageControl.currentPage = currentIndex
+        }
     }
 }
