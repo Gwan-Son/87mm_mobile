@@ -20,7 +20,7 @@ class ProductCell: UICollectionViewCell {
         return pageControl
     }()
     
-    private var heartButton: UIButton = {
+    private lazy var heartButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .black
