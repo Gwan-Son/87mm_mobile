@@ -70,11 +70,10 @@ class ViewController: UIViewController {
         return collectionView
     }()
     
-    lazy var categoryView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .main
+    lazy var categoryView: CategoryView = {
+        let view = CategoryView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = true
+        view.isHidden = isHidden
         return view
     }()
 
@@ -114,6 +113,7 @@ class ViewController: UIViewController {
         
         view.addSubview(collectionView)
         view.addSubview(categoryView)
+        
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -175,9 +175,17 @@ class ViewController: UIViewController {
     @objc func didTapButton() {
         print("Button!!")
         
+        
         isHidden.toggle()
-        // 애니메이션 추가하고 싶음.
         categoryView.isHidden = isHidden
+//        if isHidden { // hide
+//            
+//        } else { // show
+//            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+//                
+//            }
+//        }
+        
         isHidden ? (menuCustomButton.imageName = "line.3.horizontal.decrease") : (menuCustomButton.imageName = "xmark")
     }
 }
