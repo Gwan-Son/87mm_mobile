@@ -55,17 +55,12 @@ class ProductCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "S   M   L"
         label.textColor = .gray
-        label.font = UIFont(name: "87MMILSANG-Regular", size: 14)
+        label.font = UIFont(name: "87MMILSANG-Regular", size: 12)
         label.textAlignment = .center
         return label
     }()
     
-    private let dividerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .lightGray
-        view.alpha = 0.5
-        return view
-    }()
+    private let dividerView = DividerFactory.createDivider()
     
     
     
@@ -132,10 +127,10 @@ class ProductCell: UICollectionViewCell {
             sizeLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             sizeLabel.heightAnchor.constraint(equalToConstant: 20),
             
-            dividerView.heightAnchor.constraint(equalToConstant: 2),
+            dividerView.topAnchor.constraint(equalTo: sizeLabel.bottomAnchor, constant: 4),
             dividerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             dividerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            dividerView.topAnchor.constraint(equalTo: sizeLabel.bottomAnchor, constant: 0)
+            dividerView.heightAnchor.constraint(equalToConstant: 1),
             
         ])
     }
