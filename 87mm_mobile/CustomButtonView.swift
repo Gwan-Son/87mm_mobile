@@ -36,11 +36,30 @@ class CustomButtonView: UIButton {
             return
         }
         
-        if let image = UIImage(systemName: imageName) {
-            setImage(image, for: .normal)
-        } else if let image = UIImage(named: imageName) {
-            let resizedImage = image.resizeImageTo(size: CGSize(width: 44, height: 28))
-            setImage(resizedImage, for: .normal)
+        if let image = UIImage(named: imageName) {
+            if imageName == "logo" {
+                let resizedImage = image.resizeImageTo(size: CGSize(width: 44, height: 28))
+                setImage(resizedImage, for: .normal)
+            } else if imageName == "cart" {
+                let resizedImage = image.resizeImageTo(size: CGSize(width: 16, height: 14.93))
+                setImage(resizedImage, for: .normal)
+            } else if imageName == "favorite" {
+                let resizedImage = image.resizeImageTo(size: CGSize(width: 16, height: 14.85))
+                setImage(resizedImage, for: .normal)
+            } else if imageName == "profile" || imageName == "search" {
+                let resizedImage = image.resizeImageTo(size: CGSize(width: 16, height: 16))
+                setImage(resizedImage, for: .normal)
+            } else {
+                let resizedImage = image.resizeImageTo(size: CGSize(width: 20, height: 20))
+                setImage(resizedImage, for: .normal)
+            }
+        } else if let image = UIImage(systemName: imageName) {
+            if imageName == "line.3.horizontal.decrease" {
+                let resizedImage = image.resizeImageTo(size: CGSize(width: 20, height: 20))
+                setImage(resizedImage, for: .normal)
+            } else {
+                setImage(image, for: .normal)
+            }
         } else {
             setImage(nil, for: .normal)
         }
