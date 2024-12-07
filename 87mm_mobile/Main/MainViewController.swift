@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-class ViewController: UIViewController {
+class MainViewController: UIViewController {
     
     var data = ProductData.list // 임시 데이터 셋
     var dataSource: UICollectionViewDiffableDataSource<Section, ProductData>!
@@ -18,48 +18,12 @@ class ViewController: UIViewController {
         case main
     }
     
-    lazy var logoCustomButton: CustomButtonView = {
-        let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 44, height: 28))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "logo"
-        return button
-    }()
-    
-    lazy var menuCustomButton: CustomButtonView = {
-        let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "line.3.horizontal.decrease"
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-        return button
-    }()
-    
-    lazy var cartCustomButton: CustomButtonView = {
-        let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "cart"
-        return button
-    }()
-    
-    lazy var favoriteCustomButton: CustomButtonView = {
-        let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "favorite"
-        return button
-    }()
-    
-    lazy var myPageCustomButton: CustomButtonView = {
-        let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "profile"
-        return button
-    }()
-    
-    lazy var searchCustomButton: CustomButtonView = {
-        let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "search"
-        return button
-    }()
+    lazy var logoCustomButton = CustomButtonView.createButton(imageName: "logo")
+    lazy var menuCustomButton = CustomButtonView.createButton(imageName: "line.3.horizontal.decrease")
+    lazy var cartCustomButton = CustomButtonView.createButton(imageName: "cart")
+    lazy var favoriteCustomButton = CustomButtonView.createButton(imageName: "favorite")
+    lazy var myPageCustomButton = CustomButtonView.createButton(imageName: "profile")
+    lazy var searchCustomButton = CustomButtonView.createButton(imageName: "search")
     
     lazy var collectionView: UICollectionView = {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -110,7 +74,7 @@ class ViewController: UIViewController {
         
         configureCollectionView()
         applySectionItems(data)
-        
+        menuCustomButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         view.addSubview(collectionView)
         view.addSubview(categoryView)
         
@@ -170,28 +134,16 @@ class ViewController: UIViewController {
         
         return layout
     }
-
-    // 임시 버튼 테스트
-    // TODO: - 메뉴, 홈, 검색, 마이페이지, 찜, 장바구니
+    
+    // 카테고리 뷰 보기/숨기기
     @objc func didTapButton() {
-        print("Button!!")
-        
-        
         isHidden.toggle()
         categoryView.isHidden = isHidden
-//        if isHidden { // hide
-//            
-//        } else { // show
-//            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
-//                
-//            }
-//        }
-        
         isHidden ? (menuCustomButton.imageName = "line.3.horizontal.decrease") : (menuCustomButton.imageName = "close")
     }
 }
 
-extension ViewController: UICollectionViewDelegate {
+extension MainViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("didSelectItemAt: \(indexPath.item)")

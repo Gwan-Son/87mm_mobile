@@ -153,7 +153,6 @@ class ProductCell: UICollectionViewCell {
         pageControl.currentPage = 0
     }
     
-    // TODO: - Toggle HeartButton
     @objc func didTapHeartButton() {
         tempToggleBool.toggle()
         if tempToggleBool {
