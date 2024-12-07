@@ -11,6 +11,9 @@ class ProductCell: UICollectionViewCell {
     
     static let identifier = "ProductCell"
     
+    // tempToggleBool
+    var tempToggleBool: Bool = false
+    
     private var pageViewController: UIPageViewController!
     private var pages: [UIViewController] = []
     private var pageControl: UIPageControl = {
@@ -22,7 +25,8 @@ class ProductCell: UICollectionViewCell {
     
     private lazy var heartButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "heart"), for: .normal)
+        let image = UIImage(named: "product.heart")!.resizeImageTo(size: CGSize(width: 14, height: 14))
+        button.setImage(image, for: .normal)
         button.tintColor = .black
         button.addTarget(self, action: #selector(didTapHeartButton), for: .touchUpInside)
         return button
@@ -30,16 +34,17 @@ class ProductCell: UICollectionViewCell {
     
     private let productLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12)
+        label.font = UIFont(name: "87MMILSANG-Regular", size: 11)
         label.textAlignment = .center
         label.numberOfLines = 2
+        
         label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
     private let priceLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 12)
+        label.font = UIFont(name: "87MMILSANG-Regular", size: 12)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.numberOfLines = 1
@@ -50,7 +55,7 @@ class ProductCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "S   M   L"
         label.textColor = .gray
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: "87MMILSANG-Regular", size: 14)
         label.textAlignment = .center
         return label
     }()
@@ -113,9 +118,9 @@ class ProductCell: UICollectionViewCell {
             pageControl.heightAnchor.constraint(equalToConstant: 18),
             
             productLabel.topAnchor.constraint(equalTo: pageViewController.view.bottomAnchor, constant: 8),
-            productLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            productLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
-            productLabel.heightAnchor.constraint(equalToConstant: 30),
+            productLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
+            productLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            productLabel.heightAnchor.constraint(equalToConstant: 27),
             
             priceLabel.topAnchor.constraint(equalTo: productLabel.bottomAnchor, constant: 8),
             priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
@@ -155,8 +160,14 @@ class ProductCell: UICollectionViewCell {
     
     // TODO: - Toggle HeartButton
     @objc func didTapHeartButton() {
-        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        heartButton.tintColor = .main
+        tempToggleBool.toggle()
+        if tempToggleBool {
+            let image = UIImage(named: "product.heart.fill")!.resizeImageTo(size: CGSize(width: 14, height: 14))
+            heartButton.setImage(image, for: .normal)
+        } else {
+            let image = UIImage(named: "product.heart")!.resizeImageTo(size: CGSize(width: 14, height: 14))
+            heartButton.setImage(image, for: .normal)
+        }
     }
 }
 
