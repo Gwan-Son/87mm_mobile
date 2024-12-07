@@ -43,21 +43,21 @@ class ViewController: UIViewController {
     lazy var favoriteCustomButton: CustomButtonView = {
         let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "heart"
+        button.imageName = "favorite"
         return button
     }()
     
     lazy var myPageCustomButton: CustomButtonView = {
         let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "person"
+        button.imageName = "profile"
         return button
     }()
     
     lazy var searchCustomButton: CustomButtonView = {
         let button = CustomButtonView(frame: CGRect(x: 0, y: 0, width: 30, height: 25))
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.imageName = "magnifyingglass"
+        button.imageName = "search"
         return button
     }()
     
@@ -186,7 +186,7 @@ class ViewController: UIViewController {
 //            }
 //        }
         
-        isHidden ? (menuCustomButton.imageName = "line.3.horizontal.decrease") : (menuCustomButton.imageName = "xmark")
+        isHidden ? (menuCustomButton.imageName = "line.3.horizontal.decrease") : (menuCustomButton.imageName = "close")
     }
 }
 
